@@ -1,5 +1,5 @@
 import '../styles/global.css'
-import Header from '../components/header/header'
+import Header from '../components/header'
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -13,3 +13,5 @@ export default function MyApp({ Component, pageProps }) {
 }
 
 //Burasi next.js için bir master page
+
+//http://127.0.0.1:5500/

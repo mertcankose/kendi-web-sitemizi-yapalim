@@ -3,7 +3,7 @@ function HomePage() {
     <>
       <div className="site-container">
         <div className="space-y-4">
-          <h1 className="font-bold">
+          <h1 className="">
             Hey, I'm Mertcan. <br></br>I'm a Frontend Developer from Turkey.
           </h1>
           <p>

@@ -55,7 +55,7 @@ export default function PostPage({ post }) {
             className="buttons"
             onClick={() => loginWithRedirect()}
           >
-            Login
+            Loginn
           </button>
         )}
       </form>

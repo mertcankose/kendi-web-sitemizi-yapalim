@@ -20,4 +20,7 @@
   .site-big-container {
     @apply max-w-4xl mx-auto px-2
   }
+  .buttons {
+    @apply bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500 px-2 py-1 text-white rounded;
+  }
 }

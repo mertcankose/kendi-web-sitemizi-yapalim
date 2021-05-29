@@ -5,9 +5,9 @@ import { Auth0Provider } from '@auth0/auth0-react'
 export default function MyApp({ Component, pageProps }) {
   return (
     <Auth0Provider
-      domain="mertcan-kose-blog.us.auth0.com"
-      clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
+      domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN}
       redirectUri={process.env.NEXT_PUBLIC_URL}
+      clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
     >
       <div className="antialiased text-gray-800">
         <Header />

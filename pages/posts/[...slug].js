@@ -1,18 +1,49 @@
 //Detay Sayfasi
-
 import { getMdxNode, getMdxPaths } from 'next-mdx/server'
 import { useHydrate } from 'next-mdx/client'
 import { mdxComponents } from '../../components/mdx-components'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useState, useEffect } from 'react'
 
 export default function PostPage({ post }) {
-  //hook
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
-
   //Yazı içine component yerleştirmek için bu paketi kullanıyoruz.
   const content = useHydrate(post, {
     components: mdxComponents
   })
+
+  //hook
+  const {
+    loginWithPopup,
+    logout,
+    isAuthenticated,
+    user,
+    getAccessTokenSilently
+  } = useAuth0()
+
+  const [text, setText] = useState('')
+  const [url, setUrl] = useState('')
+
+  useEffect(() => {
+    const url = window.location.origin + window.location.pathname
+    setUrl(url)
+  }, [])
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+
+    const userToken = await getAccessTokenSilently()
+
+    const response = await fetch('/api/comment', {
+      method: 'POST',
+      body: JSON.stringify({ text, userToken, url }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const data = await response.json()
+    console.log(data)
+  }
 
   return (
     <div className="site-container">
@@ -23,12 +54,15 @@ export default function PostPage({ post }) {
         <div className="prose">{content}</div>
       </article>
 
-      <form className="mt-10">
+      {/*yorum atma kısmı*/}
+      <form className="mt-10" onSubmit={onSubmit}>
         <textarea
+          onChange={(e) => setText(e.target.value)}
           rows="3"
           placeholder="Leave a comment"
           className="w-full block border mb-4 resize-y px-2 py-1 bg-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
         />
+
         {isAuthenticated ? (
           <div className="flex items-center space-x-4">
             <button className="buttons">Send</button>
@@ -53,9 +87,9 @@ export default function PostPage({ post }) {
           <button
             type="button"
             className="buttons"
-            onClick={() => loginWithRedirect()}
+            onClick={() => loginWithPopup()}
           >
-            Loginn
+            Login
           </button>
         )}
       </form>

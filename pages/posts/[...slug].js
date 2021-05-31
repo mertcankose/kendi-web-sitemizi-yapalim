@@ -4,6 +4,8 @@ import { useHydrate } from 'next-mdx/client'
 import { mdxComponents } from '../../components/mdx-components'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useState, useEffect } from 'react'
+import Form from '../../components/form'
+import Comments from '../../components/comments'
 
 export default function PostPage({ post }) {
   //Yazı içine component yerleştirmek için bu paketi kullanıyoruz.
@@ -12,16 +14,27 @@ export default function PostPage({ post }) {
   })
 
   //hook
-  const {
-    loginWithPopup,
-    logout,
-    isAuthenticated,
-    user,
-    getAccessTokenSilently
-  } = useAuth0()
+  const { getAccessTokenSilently } = useAuth0()
 
   const [text, setText] = useState('')
   const [url, setUrl] = useState('')
+  const [comments, setComments] = useState([])
+
+  const fetchComment = async () => {
+    const query = new URLSearchParams({ url })
+    const newUrl = `/api/comment?${query.toString()}`
+    const response = await fetch(newUrl, {
+      method: 'GET'
+    })
+    const data = await response.json()
+    setComments(data)
+    console.log(data)
+  }
+
+  useEffect(() => {
+    if (!url) return
+    fetchComment()
+  }, [url])
 
   useEffect(() => {
     const url = window.location.origin + window.location.pathname
@@ -33,7 +46,8 @@ export default function PostPage({ post }) {
 
     const userToken = await getAccessTokenSilently()
 
-    const response = await fetch('/api/comment', {
+    //comst response =
+    await fetch('/api/comment', {
       method: 'POST',
       body: JSON.stringify({ text, userToken, url }),
       headers: {
@@ -41,8 +55,9 @@ export default function PostPage({ post }) {
       }
     })
 
-    const data = await response.json()
-    console.log(data)
+    //const data = await response.json()
+    fetchComment()
+    setText('')
   }
 
   return (
@@ -54,45 +69,9 @@ export default function PostPage({ post }) {
         <div className="prose">{content}</div>
       </article>
 
-      {/*yorum atma kısmı*/}
-      <form className="mt-10" onSubmit={onSubmit}>
-        <textarea
-          onChange={(e) => setText(e.target.value)}
-          rows="3"
-          placeholder="Leave a comment"
-          className="w-full block border mb-4 resize-y px-2 py-1 bg-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-        />
+      <Form onSubmit={onSubmit} setText={setText} text={text} />
 
-        {isAuthenticated ? (
-          <div className="flex items-center space-x-4">
-            <button className="buttons">Send</button>
-            <img
-              src={user.picture}
-              width={30}
-              className="rounded-full"
-              alt="profile"
-            />
-            <span className="">{user.name}</span>
-            <button
-              type="button"
-              className=""
-              onClick={() =>
-                logout({ returnTo: process.env.NEXT_PUBLIC_URL + '/posts' })
-              }
-            >
-              x
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className="buttons"
-            onClick={() => loginWithPopup()}
-          >
-            Login
-          </button>
-        )}
-      </form>
+      <Comments comments={comments} />
     </div>
   )
 }

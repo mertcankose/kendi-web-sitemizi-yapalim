@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { getAllNodes } from 'next-mdx/server'
 
 function Posts({ posts }) {
-  console.log(posts)
   return (
     <div className="site-container">
       <div className="space-y-10">

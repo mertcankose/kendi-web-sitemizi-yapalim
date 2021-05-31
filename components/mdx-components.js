@@ -1,3 +1,6 @@
+import Pre from '../components/pre'
+
+//pre -> kod kısımlarını temsil ediyor.
 export const mdxComponents = {
-  //p: (props) => <p className="text-blue-900" {...props} />
+  pre: ({ children }) => <Pre {...children.props} />
 }

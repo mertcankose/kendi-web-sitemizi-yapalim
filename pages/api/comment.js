@@ -1,16 +1,23 @@
 import { nanoid } from 'nanoid'
 //redis
 import Redis from 'ioredis'
+import Boom from '@hapi/boom'
+
+//server tarafından gelen hata mesajları ile uğraşmamak için HAPI kullanıyoruz
+//O uygun status codeları ve hata mesajalrını basıyor.
+function errorResponse(res, error) {
+  const { output } = error
+  return res.status(output.statusCode).json(output.payload)
+}
 
 export default async function handler(req, res) {
   // Create
   if (req.method === 'POST') {
     const { url, userToken, text } = req.body
 
-    if (!url || !userToken || !text)
-      return res
-        .status(400)
-        .json({ message: 'Parametreler eskik veya hatali!' })
+    if (!url || !userToken || !text) {
+      return errorResponse(res, Boom.badData('parametre eksik'))
+    }
 
     //user'ı doğrula
     const userResponse = await fetch(
